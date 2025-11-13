@@ -2,30 +2,6 @@
 
 # Final Project Perception
 
-## 1. Initial Project Setup
-
-### 1.1. Create the main folder structure:
-
-```
-calibration/
-rectification/
-sequence1/
-sequence2/
-sequence3/
-detection/
-tracking/
-classification/
-results/
-```
-
-### 1.2. Verify input data formats:
-
-* Paths
-* Stereo left/right consistency
-* Image dimensions
-
----
-
 ## 2. Stereo Camera Calibration
 
 **Goal: Obtain intrinsics, extrinsics, and the Q matrix.**
