@@ -46,9 +46,6 @@
 
 4.1. Choose a detection method:
 
-* Recommended: YOLOv8 / YOLOv9 trained on your own dataset
-* Traditional methods (HOG, cascades) are possible but less robust
-
 4.2. Apply detection to:
 
 * Sequence 1
