@@ -28,7 +28,7 @@
 
 ---
 
-## 3. Disparity Map and 3D Reconstruction --> Nikos & Elena
+## 3. Disparity Map and 3D Reconstruction --> Elena & Nikos
 
 **Goal: Derive depth for 3D tracking.**
 
