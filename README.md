@@ -57,8 +57,11 @@ results/
 **Goal: Derive depth for 3D tracking.**
 
 3.1. Use rectified images to compute disparity (SGBM recommended).
+
 3.2. Generate disparity map for each stereo pair.
+
 3.3. Convert disparity to 3D coordinates using the Q matrix (`reprojectImageTo3D`).
+
 3.4. Optionally store point clouds or per-pixel 3D coordinates.
 
 ---
