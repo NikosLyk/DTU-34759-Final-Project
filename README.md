@@ -2,7 +2,7 @@
 
 # Final Project Perception
 
-## 2. Stereo Camera Calibration
+## 2. Stereo Camera Calibration --> Nikos & Elena
 
 **Goal: Obtain intrinsics, extrinsics, and the Q matrix.**
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 3. Disparity Map and 3D Reconstruction
+## 3. Disparity Map and 3D Reconstruction --> Nikos & Elena
 
 **Goal: Derive depth for 3D tracking.**
 
@@ -42,7 +42,7 @@
 
 ---
 
-## 4. Object Detection (pedestrians / cyclists / cars)
+## 4. Object Detection (pedestrians / cyclists / cars) --> Lara
 
 4.1. Choose a detection method:
 
@@ -62,7 +62,7 @@
 
 ---
 
-## 5. 3D Tracking
+## 5. 3D Tracking --> Simon
 
 **Goal: Maintain tracks even under occlusions.**
 
@@ -88,7 +88,7 @@
 
 ---
 
-## 6. Classification System (Machine Learning)
+## 6. Classification System (Machine Learning) --> Francisca
 
 **Goal: Classify images into 3 classes using your own training set.**
 
