@@ -1,10 +1,8 @@
-import cv2
 import numpy as np
 
 class kalman:
 
     def __init__(self, initial_position, dt):
-        self.position = initial_position
         self.delta_time = dt
         self.age = 0   # Frames this instance has been alive
         self.missed_frames = 0
