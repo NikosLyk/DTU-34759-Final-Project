@@ -2,7 +2,7 @@ import numpy as np
 
 class kalman:
 
-    def __init__(self, initial_position, dt):
+    def __init__(self, initial_position, width, height, dt):
         self.delta_time = dt
         self.age = 0   # Frames this instance has been alive
         self.missed_frames = 0
@@ -54,14 +54,26 @@ class kalman:
                       [0, 0, 0, 0, 1, 0],
                       [0, 0, 0, 0, 0, 1]])
 
-    def update(self, Z):
+        self.width = width
+        self.height = height
+
+    def update(self, Z, width, height):
         y = Z - np.dot(self.H, self.x)
         S = np.dot(np.dot(self.H, self.P), np.transpose(self.H)) + self.R
         K = np.dot(np.dot(self.P, np.transpose(self.H)), np.linalg.pinv(S))
         self.x = self.x + np.dot(K, y)
         P = np.dot(self.I - np.dot(K, self.H), self.P)
-
+        self.width = width
+        self.height = height
 
     def predict(self):
         self.x = np.dot(self.F, self.x) + self.u
         self.P = np.dot(np.dot(self.F, self.P), np.transpose(self.F))
+
+    def get_box_corners(self):
+        box = []
+        box.append(self.x[0] - self.width / 2)  # x1
+        box.append(self.x[1] - self.height / 2) # y1
+        box.append(self.x[0] + self.width / 2)  # x2
+        box.append(self.x[1] + self.height / 2) # y2
+        return box
