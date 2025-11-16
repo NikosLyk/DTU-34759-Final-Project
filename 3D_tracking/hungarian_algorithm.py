@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 import IoU
 
+
 def assosiate_detections_to_kalmans(kalman_predictions, detections, depth_threshold, iou_threshold=0.3):
 
     if len(kalman_predictions) == 0 or len(detections) == 0:

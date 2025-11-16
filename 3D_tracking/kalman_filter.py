@@ -1,11 +1,13 @@
 import numpy as np
 
-class kalman:
 
-    def __init__(self, initial_position, width, height, dt):
+class Kalman:
+
+    def __init__(self, id, initial_position, width, height, dt):
+        self.id = id
         self.delta_time = dt
         self.age = 0   # Frames this instance has been alive
-        self.missed_frames = 0
+        self.missed_frames = 0  # Frames since last detection of object
 
         # The initial state vector (x, y, z, vx, vy, vz) (6x1).
         self.x = np.array([[initial_position[0]],

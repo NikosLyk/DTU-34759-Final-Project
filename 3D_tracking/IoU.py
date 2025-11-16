@@ -1,4 +1,6 @@
 import numpy as np
+
+
 def calculate_iou(boxA, boxB):
     """
     Calculates the intersection over uniouon of the bounding boxes of two detected objects
