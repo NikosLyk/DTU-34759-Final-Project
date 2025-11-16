@@ -85,3 +85,38 @@ img_size_R = gray_R.shape[::-1]   # (width, height)
 
 ret_R, mtx_R, dist_R, rvecs_R, tvecs_R = cv2.calibrateCamera(objpoints_R, imgpoints_R, img_size_R, None, None)
 
+
+# ------------------------
+# STEREO CALIBRATION
+# ------------------------
+
+# OpenCV flags: we already know intrinsics from monocular calibration. OPTIONAL
+flags = cv2.CALIB_FIX_INTRINSIC
+
+criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-5)
+
+# IMPORTANT:
+# objpoints for left and right are THE SAME (same board), so we can use objpoints_L (or objpoints_R)
+objpoints_stereo = objpoints_L  
+
+# Run stereo calibration
+ret_s, cameraMatrixL, distCoeffL, cameraMatrixR, distCoeffR, R, T, E, F = cv2.stereoCalibrate(
+    objpoints_stereo,
+    imgpoints_L,
+    imgpoints_R,
+    mtx_L,
+    dist_L,
+    mtx_R,
+    dist_R,
+    img_size_L,
+    criteria=criteria,
+    flags=flags
+)
+
+print("Stereo calibration RMS error:", ret_s)
+print("Rotation matrix R:")
+print(R)
+print("Translation vector T:")
+print(T)
+
+
