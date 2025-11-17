@@ -19,10 +19,11 @@ def assosiate_detections_to_kalmans(kalman_predictions, detections, depth_thresh
             depth_diff = abs(kalman.x[2] - detection.depth) # TODO: aslo need to figure the depth of the detections out
 
             # IoU is used for cost calculation, while the depth is only used for gating. TODO: Check if this is sufficient
-            if iou > iou_threshold and depth_diff > depth_threshold:
+            if iou > iou_threshold and depth_diff < depth_threshold:
                 cost_matrix[k, d] = 1.0 - iou
             # If the gating check fails, the cost remains 1e9
 
+    # Running the hungarian algorithm
     kalman_indices, detection_indices = linear_sum_assignment(cost_matrix)
 
     matches = []
