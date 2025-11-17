@@ -34,7 +34,7 @@ class Tracker3d:
             for detection in new_detections:
                 self._create_new_kalman(detection)
         else:
-            matches, umatched_kalman_idx, unmatched_detections_idx = hungarian_algorithm.assosiate_detections_to_kalmans(
+            matches, umatched_kalman_idx, unmatched_detections_idx = data_association.assosiate_detections_to_kalmans(
                 self.active_kalmans, new_detections, self.iou_threshold, self.depth_threshold
             )
 
