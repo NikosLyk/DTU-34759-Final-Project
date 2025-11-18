@@ -1,6 +1,6 @@
 COMMENT: 
-A stereo calibration was compared using the previously estimated monocular intrinsics (RMS ≈ 6.5) with an alternative approach in which 
-all intrinsic parameters were re-estimated jointly during stereo calibration (RMS ≈ 4.5).
+A stereo calibration was compared using estimated monocular intrinsics (RMS ≈ 6.5) with an alternative approach in which all intrinsic 
+parameters were re-estimated jointly during stereo calibration (RMS ≈ 4.5).
 
 Although this second method slightly modifies some of the monocular intrinsic parameters, it provides a significantly lower reprojection 
 error and results in more consistent rectified image pairs and disparity maps. For this reason, the final stereo calibration used in the
