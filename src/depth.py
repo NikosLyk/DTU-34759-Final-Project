@@ -72,7 +72,7 @@ class StereoDepthProcessor:
             print("   -> Computing rectification matrices via stereoRectify...")
             R, T = calib_data['R'], calib_data['T']
             R1, R2, P1, P2, Q, _, _ = cv2.stereoRectify(
-                M1, D1, M2, D2, image_size, R, T, flags=cv2.CALIB_ZERO_DISPARITY, alpha=0
+                M1, D1, M2, D2, image_size, R, T, flags=cv2.CALIB_ZERO_DISPARITY, alpha=1
             )
             self.Q = Q
         
@@ -345,4 +345,5 @@ def main():
     print(f"Results saved to: {OUTPUT_ROOT}")
 
 if __name__ == "__main__":
+
     main()
