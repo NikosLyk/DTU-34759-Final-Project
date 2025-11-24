@@ -67,7 +67,8 @@ class Tracker3d:
     def _create_new_kalman(self, detection):
         """Helper function to create and register a new tracker."""
         kalman_id = self.next_kalman_id
-        new_kalman = kalman_filter.Kalman(kalman_id, detection.position, detection.width, detection.height, self.dt)
+        position = [detection['pos_x'], detection['pos_y'], detection['depth_m']]
+        new_kalman = kalman_filter.Kalman(kalman_id, position, detection['width'], detection['height'], self.dt)
 
         self.active_kalmans.append(new_kalman)
         self.next_kalman_id += 1
