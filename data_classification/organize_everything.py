@@ -1,10 +1,10 @@
 import cv2
 import os
 
-BASE = "/Users/franciscateixeira/Documents/DTU/1st semester/Perception for Autonomous Systems/DTU-34759-Final-Project/data_classification/34759_final_project_rect"
+BASE = "/Users/franciscateixeira/Documents/DTU/1st semester/Perception for Autonomous Systems/DTU-34759-Final-Project/data_classification"
 
 def extract_crops(seq_name, output_path):
-    seq_path = BASE + "/" + seq_name
+    seq_path = BASE + "/34759_final_project_rect/" + seq_name
     labels_file = seq_path +  "/labels.txt"
     images_path = seq_path + "/image_02/data"
 
@@ -44,7 +44,6 @@ def extract_crops(seq_name, output_path):
                 print(f" Empty crop on {img_file}")
                 continue
 
-            crop = cv2.resize(crop, (128, 128))
 
             # save crop
             save_dir = os.path.join(output_path, obj_type.lower())
