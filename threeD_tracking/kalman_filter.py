@@ -18,12 +18,12 @@ class Kalman:
                       [0]])
 
         # The initial uncertainty (6x6).
-        self.P = np.array([[1000000000000, 0, 0, 0, 0, 0],
-                      [0, 1000000000000, 0, 0, 0, 0],
-                      [0, 0, 1000000, 0, 0, 0],
-                      [0, 0, 0, 1000000, 0, 0],
-                      [0, 0, 0, 0, 1000000, 0],
-                      [0, 0, 0, 0, 0, 1000000]])
+        self.P = np.array([[10, 0, 0, 0, 0, 0],
+                      [0, 10, 0, 0, 0, 0],
+                      [0, 0, 1, 0, 0, 0],
+                      [0, 0, 0, 100, 0, 0],
+                      [0, 0, 0, 0, 100, 0],
+                      [0, 0, 0, 0, 0, 10]])
 
         # The external motion (6x1).
         self.u = np.array([[0],
@@ -33,21 +33,32 @@ class Kalman:
                       [0],
                       [0]])
 
-        # The transition matrix (6x6). NB: NOT LIKE THIS
-        self.F = np.array([[1, 0, dt, 0, 0.5 * dt ** 2, 0],
-                      [0, 1, 0, dt, 0, 0.5 * dt ** 2],
-                      [0, 0, 1, 0, dt, 0],
-                      [0, 0, 0, 1, 0, dt],
-                      [0, 0, 0, 0, 1, 0],
-                      [0, 0, 0, 0, 0, 1]])
+        self.F = np.array([
+            [1, 0, 0, dt, 0, 0],
+            [0, 1, 0, 0, dt, 0],
+            [0, 0, 1, 0, 0, dt],
+            [0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1]
+        ])
+
+        # Added the process noise matrix, to try to improve performance of filter
+        s_pos = 1.0  # Position noise (pixels)
+        s_vel = 50.0  # Velocity noise (pixels/frame) - Lower this to stop overshooting!
+        s_z = 0.5  # Depth noise (meters)
+        s_vz = 10.0  # Depth velocity noise
+
+        self.Q = np.diag([s_pos, s_pos, s_z, s_vel, s_vel, s_vz])
 
         # The observation matrix (2x6). NB: NOT LIKE THIS
         self.H = np.array([[1, 0, 0, 0, 0, 0],
-                      [0, 1, 0, 0, 0, 0]])
+                    [0, 1, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0]])
 
         # The measurement uncertainty.
-        self.R = np.array([[1000000, 0],
-                      [0, 1000000]])
+        self.R = np.array([[150, 0, 0],
+                    [0, 150, 0],
+                    [0, 0, 1.0]])
 
         self.I = np.array([[1, 0, 0, 0, 0, 0],
                       [0, 1, 0, 0, 0, 0],
@@ -60,6 +71,7 @@ class Kalman:
         self.height = height
 
     def update(self, Z, width, height):
+        Z = np.array(Z).reshape(-1, 1)
         y = Z - np.dot(self.H, self.x)
         S = np.dot(np.dot(self.H, self.P), np.transpose(self.H)) + self.R
         K = np.dot(np.dot(self.P, np.transpose(self.H)), np.linalg.pinv(S))
@@ -70,7 +82,7 @@ class Kalman:
 
     def predict(self):
         self.x = np.dot(self.F, self.x) + self.u
-        self.P = np.dot(np.dot(self.F, self.P), np.transpose(self.F))
+        self.P = np.dot(np.dot(self.F, self.P), self.F.T) + self.Q
 
     def get_box_corners(self):
         box = []

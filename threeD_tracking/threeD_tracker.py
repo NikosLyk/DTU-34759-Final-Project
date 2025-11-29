@@ -1,16 +1,15 @@
-import cv2
 import numpy as np
-import kalman_filter
-import data_association
+from threeD_tracking import kalman_filter
+from threeD_tracking import data_association
 
 
 class Tracker3d:
 
-    def __init__(self, delta_time, iou_threshold=0.3, depth_threshold=1.5, max_missed_frames=10):
+    def __init__(self, delta_time, depth_threshold=1.5, max_missed_frames=10, max_pixel_dist=200):
         self.dt = delta_time
         self.active_kalmans = []
+        self.max_pixel_dist = max_pixel_dist
 
-        self.iou_threshold = iou_threshold
         self.depth_threshold = depth_threshold
         self.max_missed_frames = max_missed_frames
 
@@ -20,9 +19,13 @@ class Tracker3d:
 
         self.frame_count = 0
 
+        self.n_detections = 0
+
         self.current_state = []
 
     def update_tracker(self, new_detections):
+
+        self.n_detections = len(new_detections)
 
         self.frame_count += 1
 
@@ -34,19 +37,23 @@ class Tracker3d:
             for detection in new_detections:
                 self._create_new_kalman(detection)
         else:
-            matches, umatched_kalman_idx, unmatched_detections_idx = data_association.assosiate_detections_to_kalmans(
-                self.active_kalmans, new_detections, self.iou_threshold, self.depth_threshold
+            matches, unmatched_kalman_idx, unmatched_detections_idx = data_association.assosiate_detections_to_kalmans(
+                self.active_kalmans, new_detections, self.depth_threshold, self.max_pixel_dist
             )
 
             for k_idx, d_idx in matches:
                 kalman = self.active_kalmans[k_idx]
+                kalman.missed_frames = 0
                 detection = new_detections[d_idx]
-                kalman.update(detection)
+                Z = np.array([float(detection[0]), float(detection[1]), float(detection[2])])
+                width = float(detection[3])
+                height = float(detection[4])
+                kalman.update(Z, width, height)
 
                 self._save_trajectory(kalman)
 
             # Handle potential lost objects
-            self._manage_unmatched_kalmans(unmatched_detections_idx)
+            self._manage_unmatched_kalmans(unmatched_kalman_idx)   # TODO: double check this
 
             # Handle new detections
             for d_idx in unmatched_detections_idx:
@@ -56,10 +63,14 @@ class Tracker3d:
             state = []
             for kalman in self.active_kalmans:
                 if kalman.missed_frames <= self.max_missed_frames:
+                    raw_box = kalman.get_box_corners()
+                    flat_box = np.array(raw_box).flatten()
+                    # Clean the box
+                    box_clean = [float(x) for x in flat_box]
                     state.append({
                         'id': kalman.id,
-                        'bbox': kalman.get_box_corners(),
-                        'depth': kalman.x[2]
+                        'bbox': [float(x) for x in box_clean],
+                        'depth': float(kalman.x.flatten()[2])
                     })
 
             self.current_state = state
@@ -67,8 +78,8 @@ class Tracker3d:
     def _create_new_kalman(self, detection):
         """Helper function to create and register a new tracker."""
         kalman_id = self.next_kalman_id
-        position = [detection['pos_x'], detection['pos_y'], detection['depth_m']]
-        new_kalman = kalman_filter.Kalman(kalman_id, position, detection['width'], detection['height'], self.dt)
+        position = [detection[0], detection[1], detection[2]]
+        new_kalman = kalman_filter.Kalman(kalman_id, position, detection[3], detection[4], self.dt)
 
         self.active_kalmans.append(new_kalman)
         self.next_kalman_id += 1
@@ -83,15 +94,28 @@ class Tracker3d:
         for k_idx in sorted(unmatched_indices, reverse=True):
             kalman = self.active_kalmans[k_idx]
 
+            kalman.missed_frames += 1
+
             if kalman.missed_frames > self.max_missed_frames:
                 # The trajectory data in self.trajectories is preserved
                 self.active_kalmans.pop(k_idx)
 
     def _save_trajectory(self, kalman):
         """Helper function to save the current state to its trajectory."""
+
+        # Clean the center point (convert from numpy array to list)
+        flat_state = np.array(kalman.x).flatten()
+        center_clean = [float(flat_state[0]), float(flat_state[1])]
+        depth_clean = float(flat_state[2])
+
+        raw_box = kalman.get_box_corners()
+        flat_box = np.array(raw_box).flatten()
+        # Clean the box
+        box_clean = [float(x) for x in flat_box]
+
         self.trajectories[kalman.id].append({
             'frame': self.frame_count,
-            'bbox': kalman.get_box_corners(),
-            'depth': kalman.x[2],
-            'center': kalman.x[:2]
+            'bbox': box_clean,
+            'depth': depth_clean,
+            'center': center_clean
         })
