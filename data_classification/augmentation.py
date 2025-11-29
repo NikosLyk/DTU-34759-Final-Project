@@ -15,7 +15,6 @@ os.makedirs(output_pedestrian_folder, exist_ok=True)
 os.makedirs(output_car_folder, exist_ok=True)
 os.makedirs(output_cyclist_folder, exist_ok=True)
 
-# No teu augmentation.py, adiciona estas transformações:
 
 def add_noise(image):
     row, col, ch = image.shape
@@ -63,11 +62,11 @@ def augment_images(input_folder, output_folder):
         bright = cv2.convertScaleAbs(img, alpha=1.0, beta=40)
         cv2.imwrite(output_folder + "/bright_" + file, bright)
 
-        # 7. Low Contrast (Simular dia nublado/câmara fraca)
+        # 7. Low Contrast
         low_cont = cv2.convertScaleAbs(img, alpha=0.5, beta=0)
         cv2.imwrite(output_folder + "/low_contrast_" + file, low_cont)
 
-        # 8. Noisy (Simular sensor da câmara)
+        # 8. Noisy
         noisy = add_noise(img)
         cv2.imwrite(output_folder + "/noisy_" + file, noisy)
 
