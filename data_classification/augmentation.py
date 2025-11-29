@@ -22,7 +22,7 @@ def add_noise(image):
     var = 0.1
     sigma = var**0.5
     gauss = np.random.normal(mean, sigma, (row, col, ch))
-    noisy = image + gauss * 50 # Ajusta o 50 para mais/menos ruído
+    noisy = image + gauss * 50
     return np.clip(noisy, 0, 255).astype('uint8')
 
 
