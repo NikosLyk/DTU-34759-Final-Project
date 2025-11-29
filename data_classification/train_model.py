@@ -29,12 +29,32 @@ def load_images_from_folder(folder, label_idx):
 
         if img is not None:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            resized = cv2.resize(gray, IMG_SIZE)
+            resized = resize_pad(gray, IMG_SIZE)
             data.append(resized.flatten())
             labels.append(label_idx)
 
     return data, labels
 
+def resize_pad(img, target_size):
+    h, w = img.shape
+    target_w, target_h = target_size
+
+    scale = min(target_w / w, target_h / h)
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+
+    resized = cv2.resize(img, (new_w, new_h))
+
+
+    grey = np.zeros((target_h, target_w), dtype=np.uint8)
+
+    # center the resized image
+    x_offset = (target_w - new_w) // 2
+    y_offset = (target_h - new_h) // 2
+
+    grey[y_offset:y_offset + new_h, x_offset:x_offset + new_w] = resized
+
+    return grey
 
 def load_dataset(base_path):
     X = []
@@ -62,10 +82,6 @@ if len(X_train) == 0:
     print("No training images were found")
     exit()
 
-# Se não tiveres validação ainda, usa uma parte do treino para testar
-if len(X_val) == 0:
-    print("No validation images were found, splitting training data...")
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
 #grid search
 print("\n otimizing hyperparameters with Grid Search")
@@ -86,7 +102,7 @@ param_grid = {
 grid = GridSearchCV(pipeline, param_grid, cv=3, n_jobs=-1, verbose=2)
 grid.fit(X_train, y_train)
 
-print(f"\nbest parameters founf: {grid.best_params_}")
+print(f"\nbest parameters found: {grid.best_params_}")
 print(f"best accuracy in training: {grid.best_score_*100:.2f}%")
 
 best_model = grid.best_estimator_
